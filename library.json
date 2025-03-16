@@ -1,0 +1,30 @@
+[
+  {
+    title: "You Don't Know JS",
+    author: "Kyle Simpson",
+    publication_year: 2015,
+    genre: "JavaScript",
+    read_status: "Read"
+  },
+  {
+    title: "Eloquent JavaScript",
+    author: "Marijn Haverbeke",
+    publication_year: 2018,
+    genre: "JavaScript",
+    read_status: "Unread"
+  },
+  {
+    title: "Clean Code",
+    author: "Robert C. Martin",
+    publication_year: 2008,
+    genre: "Software Engineering",
+    read_status: "Read"
+  },
+  {
+    title: "The Pragmatic Programmer",
+    author: "Andrew Hunt, David Thomas",
+    publication_year: 1999,
+    genre: "Software Engineering",
+    read_status: "Unread"
+  },
+]
