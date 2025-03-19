@@ -24,6 +24,38 @@ def load_lottieurl(url):
     except requests.RequestException:
         return None
 
+# Custom CSS
+st.markdown("""
+<style>
+    .book-card {
+        background: linear-gradient(135deg, #3b82f6, #1e3a8a);
+        border-radius: 12px;
+        padding: 20px;
+        margin: 10px 0;
+        color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        transition: transform 0.3s ease-in-out;
+    }
+    .book-card:hover {
+        transform: scale(1.05);
+    }
+    .book-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+    .book-details {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+    .remove-button {
+        background-color: #ef4444 !important;
+        color: white !important;
+        border-radius: 8px;
+        padding: 8px 16px;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # Initialize session state
 if 'library' not in st.session_state:
     st.session_state.library = []
@@ -82,20 +114,6 @@ def remove_book(index):
         return True
     return False
 
-# Search books
-def search_books(search_term, search_by):
-    search_term = search_term.lower()
-    st.session_state.search_results = [
-        book for book in st.session_state.library if search_term in book[search_by].lower()
-    ]
-
-# Library statistics
-def get_library_stats():
-    total_books = len(st.session_state.library)
-    read_books = sum(1 for book in st.session_state.library if book['read_status'] == "Read")
-    percent_read = (read_books / total_books * 100) if total_books > 0 else 0
-    return {'total_books': total_books, 'read_books': read_books, 'percent_read': percent_read}
-
 # Load library on startup
 load_library()
 
@@ -112,44 +130,25 @@ st.session_state.current_view = nav_options.lower().replace(" ", "_")
 # Main UI
 st.markdown("<h1 style='text-align: center;'>Personal Library Manager</h1>", unsafe_allow_html=True)
 
-if st.session_state.current_view == "add_book":
-    st.markdown("<h2>Add a New Book</h2>")
-    with st.form(key='add_book_form'):
-        title = st.text_input("Book Title")
-        author = st.text_input("Author")
-        publication_year = st.number_input("Publication Year", min_value=1000, max_value=datetime.now().year, step=1)
-        genre = st.selectbox("Genre", ["Fiction", "Non-Fiction", "Science", "Technology", "Fantasy", "Other"])
-        read_status = st.radio("Read Status", ["Read", "Unread"])
-        submit_button = st.form_submit_button("Add Book")
-        if submit_button:
-            add_book(title, author, publication_year, genre, read_status)
-
-elif st.session_state.current_view == "search_books":
-    st.markdown("<h2>Search Books</h2>")
-    search_term = st.text_input("Enter search term")
-    search_by = st.selectbox("Search by", ["title", "author", "genre"])
-    if st.button("Search"):
-        search_books(search_term, search_by)
-    if st.session_state.search_results:
-        for book in st.session_state.search_results:
-            st.write(f"**{book['title']}** by {book['author']}")
-
-elif st.session_state.current_view == "view_library":
+if st.session_state.current_view == "view_library":
     st.markdown("<h2>Library Books</h2>")
     if not st.session_state.library:
         st.write("No books in library.")
     else:
         for i, book in enumerate(st.session_state.library):
-            st.write(f"**{book['title']}** by {book['author']} ({book['publication_year']}) - {book['genre']} - {'Read' if book['read_status'] else 'Unread'}")
+            st.markdown(f"""
+            <div class="book-card">
+                <div class="book-title">{book['title']}</div>
+                <div class="book-details">by {book['author']} ({book['publication_year']})</div>
+                <div class="book-details">Genre: {book['genre']}</div>
+                <div class="book-details">Status: {'✔ Read' if book['read_status'] == 'Read' else '❌ Unread'}</div>
+                <div style='margin-top: 10px;'>
+                    <button class='remove-button' onClick="window.location.reload();">Remove</button>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
             if st.button(f"Remove {book['title']}", key=i):
                 remove_book(i)
-
-elif st.session_state.current_view == "library_statistics":
-    st.markdown("<h2>Library Statistics</h2>")
-    stats = get_library_stats()
-    st.metric("Total Books", stats['total_books'])
-    st.metric("Books Read", stats['read_books'])
-    st.metric("Percentage Read", f"{stats['percent_read']:.1f}%")
 
 st.markdown("---")
 st.markdown("© 2025 Kishor Kode Personal Library Manager", unsafe_allow_html=True)
