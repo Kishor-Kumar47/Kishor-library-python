@@ -194,7 +194,7 @@ elif st.session_state.current_view == "view_library":
                 
                 if st.button(f"🗑 Remove {book['title']}", key=f"remove_{index}"):
                     remove_book(index)
-                    st.experimental_rerun()
+                    st.rerun()
 
 elif st.session_state.current_view == "search_books":
     st.markdown("<h2 class='sub-header'>🔍 Search Books</h2>", unsafe_allow_html=True)
